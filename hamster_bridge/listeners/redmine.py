@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 import os
 
 import logging
@@ -29,27 +29,27 @@ class RedmineHamsterListener(HamsterListener):
     config_values = [
         ConfigValue(
             key='server_url',
-            setup_func=lambda: raw_input('Root URL to the Redmine server [f.e. "http://redmine.example.org/"]\n'),
+            setup_func=lambda: input('Root URL to the Redmine server [f.e. "http://redmine.example.org/"]\n'),
             sensitive=False,
         ),
         ConfigValue(
             key='api_key',
-            setup_func=lambda: raw_input('Your Redmine API access key.\n'),
+            setup_func=lambda: input('Your Redmine API access key.\n'),
             sensitive=False,
         ),
         ConfigValue(
             key='version',
-            setup_func=lambda: raw_input('The Redmine version number, e.g. 2.5.1\n'),
+            setup_func=lambda: input('The Redmine version number, e.g. 2.5.1\n'),
             sensitive=False,
         ),
         ConfigValue(
             key='auto_start',
-            setup_func=lambda: raw_input('Automatically start the issue when you start the task in hamster? [y/n]\n'),
+            setup_func=lambda: input('Automatically start the issue when you start the task in hamster? [y/n]\n'),
             sensitive=False,
         ),
         ConfigValue(
             key='verify_ssl',
-            setup_func=lambda: raw_input('Verify HTTPS/SSL connections? '
+            setup_func=lambda: input('Verify HTTPS/SSL connections? '
                 'You can also specify the path to a CA certificate bundle. [y/n/PATH]\n'),
             sensitive=False,
         ),
@@ -109,7 +109,7 @@ class RedmineHamsterListener(HamsterListener):
             """
             Filter function to find the in work status.
             """
-            return element.name in [u'In Bearbeitung', u'In Work']
+            return element.name in ['In Bearbeitung', 'In Work']
 
         # get the issue statuses
         issue_statuses = self.redmine.issue_status.all()
@@ -135,7 +135,7 @@ class RedmineHamsterListener(HamsterListener):
         :return: the id of the first activity
         :rtype: int
         """
-        return [key for key, value in self.__activities.items() if value[1]][0]
+        return [key for key, value in list(self.__activities.items()) if value[1]][0]
 
     def __get_activity_id(self, tags):
         """
@@ -150,7 +150,7 @@ class RedmineHamsterListener(HamsterListener):
             # this grabs the first activity from the dict
             return self.__get_first_activity_id()
         else:
-            for activity_id, activity_value in self.__activities.viewitems():
+            for activity_id, activity_value in self.__activities.items():
                 try:
                     next(tag for tag in tags if tag == activity_value[0])
                     return activity_id

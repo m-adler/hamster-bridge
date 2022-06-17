@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 import os
 # MAX patch
 import sys
@@ -26,29 +26,29 @@ class JiraHamsterListener(HamsterListener):
     config_values = [
         ConfigValue(
             key='server_url',
-            setup_func=lambda: raw_input('Root url of your jira server [f.e. "http://jira.example.org"]: '),
+            setup_func=lambda: input('Root url of your jira server [f.e. "http://jira.example.org"]: '),
             sensitive=False,
         ),
         ConfigValue(
             key='username',
-            setup_func=lambda: raw_input('Your jira user name: '),
+            setup_func=lambda: input('Your jira user name: '),
             sensitive=False,
         ),
         ConfigValue(
             key='password',
-            setup_func=lambda: getpass('Your jira password: ') if sys.stdin.isatty() else raw_input(),
+            setup_func=lambda: getpass('Your jira password: ') if sys.stdin.isatty() else input(),
             sensitive=True,
         ),
         ConfigValue(
             key='auto_start',
-            setup_func=lambda: raw_input('Automatically start the issue when '
+            setup_func=lambda: input('Automatically start the issue when '
                 'you start the task in hamster?  You can also specify the name of '
                 'the JIRA transition to use.  [y/n/TRANSITION_NAME]: '),
             sensitive=False,
         ),
         ConfigValue(
             key='verify_ssl',
-            setup_func=lambda: raw_input('Verify HTTPS/SSL connections?  '
+            setup_func=lambda: input('Verify HTTPS/SSL connections?  '
                 'You can also specify the path to a CA certificate bundle.  [y/n/PATH]: '),
             sensitive=False,
         ),
@@ -106,7 +106,7 @@ class JiraHamsterListener(HamsterListener):
                     self.jira.issue(possible_issue)
                     logger.debug('Found existing issue "%s" in "%s"', possible_issue, field)
                     return possible_issue
-                except JIRAError, e:
+                except JIRAError as e:
                     if e.text == 'Issue Does Not Exist':
                         logger.warning('Tried issue "%s", but does not exist. ', possible_issue)
                     else:
@@ -117,9 +117,9 @@ class JiraHamsterListener(HamsterListener):
         if auto_start.lower() in ('n', 'false'):
             return
         elif auto_start.lower() in ('y', 'true'):
-            transition_name = u'Start Progress'
+            transition_name = 'Start Progress'
         else:
-            transition_name = unicode(auto_start, 'utf-8')
+            transition_name = str(auto_start, 'utf-8')
         try:
             issue_name = self.__issue_from_fact(fact)
             if issue_name is None:
