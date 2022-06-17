@@ -2,7 +2,7 @@ from collections import namedtuple
 from configparser import NoOptionError
 
 
-ConfigValue = namedtuple('ConfigValue', ['key', 'setup_func', 'sensitive'])
+ConfigValue = namedtuple("ConfigValue", ["key", "setup_func", "sensitive"])
 
 
 class HamsterListener(object):
@@ -27,7 +27,6 @@ class HamsterListener(object):
                 # ... if again not found return None
                 value = None
         return value
-
 
     def configure(self, config, sensitive_config):
         """
