@@ -74,7 +74,7 @@ class HamsterBridge(hamster.client.Storage):
             logger.debug('Configuring listener %s', listener)
             listener.configure(config, sensitive_config)
         # save to file
-        with open(path, 'wb') as configfile:
+        with open(path, 'w') as configfile:
             logger.debug('Writing back configuration to %s', path)
             if self.save_passwords:
                 all_configs = _combine_configs(config, sensitive_config)
