@@ -11,7 +11,7 @@ talk to the hamster instance).
 
 create virtualenv with system packages::
 
-    virtualenv --system-site-packages path/to/hamster-bridge-env
+    python3 -m venv --system-site-packages path/to/hamster-bridge-env
     source path/to/hamster-bridge-env/bin/activate
 
 JIRA
