@@ -1,7 +1,6 @@
 from collections import namedtuple
 from configparser import NoOptionError
 
-
 ConfigValue = namedtuple("ConfigValue", ["key", "setup_func", "sensitive"])
 
 

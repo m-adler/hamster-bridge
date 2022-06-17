@@ -1,13 +1,8 @@
-import os
-
 import logging
+import os
 import re
 
-from hamster_bridge.listeners import (
-    HamsterListener,
-    ConfigValue,
-)
-
+from hamster_bridge.listeners import ConfigValue, HamsterListener
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-
 setup(
     name="hamster-bridge",
     description="let your hamster log your work to your favorite bugtracker",

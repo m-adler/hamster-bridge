@@ -1,20 +1,16 @@
+import datetime
+import logging
 import os
+import re
 
 # MAX patch
 import sys
+from getpass import getpass
 
+from dateutil.tz import *
 from jira import JIRA, JIRAError
 
-from hamster_bridge.listeners import (
-    HamsterListener,
-    ConfigValue,
-)
-
-import logging
-import re
-import datetime
-from dateutil.tz import *
-from getpass import getpass
+from hamster_bridge.listeners import ConfigValue, HamsterListener
 
 logger = logging.getLogger(__name__)
 

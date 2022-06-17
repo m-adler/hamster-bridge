@@ -3,7 +3,6 @@ import logging
 
 from hamster_bridge.bridge import HamsterBridge
 
-
 CONFIG_PATH = "~/.hamster-bridge.cfg"
 
 
