@@ -22,9 +22,10 @@ LISTENERS = [
 
 
 def main():
-    listener_choices = dict(
-        (lc.short_name, lc) for lc in [import_listener(l) for l in LISTENERS]
-    )
+    listener_choices = {
+        lc.short_name: lc
+        for lc in [import_listener(listener_path) for listener_path in LISTENERS]
+    }
 
     parser = argparse.ArgumentParser(
         description="Let your hamster log your work to your favorite bugtracker."

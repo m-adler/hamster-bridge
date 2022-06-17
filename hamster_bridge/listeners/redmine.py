@@ -57,7 +57,7 @@ class RedmineHamsterListener(HamsterListener):
     ]
 
     # Redmine issue key is just a number
-    issue_from_title = re.compile("([0-9]+)\ ")
+    issue_from_title = re.compile("([0-9]+) ")
 
     def __init__(self):
         """

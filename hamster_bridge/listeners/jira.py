@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import re
@@ -7,7 +6,7 @@ import re
 import sys
 from getpass import getpass
 
-from dateutil.tz import *
+from dateutil.tz import tzlocal
 from jira import JIRA, JIRAError
 
 from hamster_bridge.listeners import ConfigValue, HamsterListener
@@ -94,7 +93,7 @@ class JiraHamsterListener(HamsterListener):
 
         try:
             self.jira.projects()
-        except:
+        except Exception:
             logger.exception(
                 "Can not connect to JIRA, please check ~/.hamster-bridge.cfg"
             )
