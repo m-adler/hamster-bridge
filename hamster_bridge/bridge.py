@@ -1,9 +1,10 @@
 import configparser
-import datetime
 import logging
 import os
 import stat
 import time
+
+from hamster.lib.fact import Fact
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ class HamsterBridge(hamster.client.Storage):
         super(HamsterBridge, self).__init__()
         self._listeners = []
         self.save_passwords = save_passwords
+        self._facts_cache: dict[int, Fact] = dict()
 
     def add_listener(self, listener):
         """
@@ -93,24 +95,45 @@ class HamsterBridge(hamster.client.Storage):
         :param polling_intervall: how often the connector polls data from haster in seconds (default: 1)
         :type  polling_intervall: int
         """
+        for listener in self._listeners:
+            logger.debug("Preparing listener %s", listener)
+            listener.prepare()
+        logger.info("Start listening for hamster activity...")
+
+        self._facts_cache = {fact.id: fact for fact in self.get_todays_facts()}
         try:
-            for listener in self._listeners:
-                logger.debug("Preparing listener %s", listener)
-                listener.prepare()
-            logger.info("Start listening for hamster activity...")
-            now = datetime.datetime.now().replace(microsecond=0)
             while True:
-                last = now
-                now = datetime.datetime.now().replace(microsecond=0)
-                for fact in self.get_todays_facts():
-                    if fact.start_time is not None and last <= fact.start_time < now:
-                        logger.debug("Found a started task: %r", vars(fact))
-                        for listener in self._listeners:
-                            listener.on_fact_started(fact)
-                    if fact.end_time is not None and last <= fact.end_time < now:
-                        logger.debug("Found a stopped task: %r", vars(fact))
-                        for listener in self._listeners:
-                            listener.on_fact_stopped(fact)
+                self.process()
                 time.sleep(polling_intervall)
         except (KeyboardInterrupt, SystemExit):
             pass
+
+    def cleanup_extraneous_facts_cache_entries(self, current_facts: list[Fact]):
+        extraneous_fact_ids = set(self._facts_cache.keys()) - {
+            fact.id for fact in current_facts
+        }
+        for id in extraneous_fact_ids:
+            del self._facts_cache[id]
+
+    def process(self):
+        current_facts = self.get_todays_facts()
+        self.cleanup_extraneous_facts_cache_entries(current_facts)
+
+        for fact in current_facts:
+            cached_fact = self._facts_cache.get(fact.id)
+            # Skip if ther are no changes
+            if cached_fact == fact:
+                continue
+
+            if cached_fact is None:
+                logger.debug("Found a new task: %r", vars(fact))
+                for listener in self._listeners:
+                    listener.on_fact_started(fact)
+
+            is_cached_fact_started = not (cached_fact and cached_fact.end_time)
+            if fact.end_time and is_cached_fact_started:
+                logger.debug("Found a stopped task: %r", vars(fact))
+                for listener in self._listeners:
+                    listener.on_fact_stopped(fact)
+
+            self._facts_cache[fact.id] = fact

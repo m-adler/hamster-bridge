@@ -4,6 +4,7 @@ import re
 
 # MAX patch
 import sys
+from datetime import datetime
 from getpass import getpass
 
 from dateutil.tz import tzlocal
@@ -12,6 +13,19 @@ from jira import JIRA, JIRAError
 from hamster_bridge.listeners import ConfigValue, HamsterListener
 
 logger = logging.getLogger(__name__)
+
+
+def convert_hamster_dt_to_native_dt(hamster_dt) -> datetime:
+    return datetime(
+        hamster_dt.year,
+        hamster_dt.month,
+        hamster_dt.day,
+        hamster_dt.hour,
+        hamster_dt.minute,
+        hamster_dt.second,
+        hamster_dt.microsecond,
+        hamster_dt.tzinfo,
+    )
 
 
 class JiraHamsterListener(HamsterListener):
@@ -156,7 +170,7 @@ class JiraHamsterListener(HamsterListener):
     def on_fact_stopped(self, fact):
         time_spent = "%dm" % (fact.delta.total_seconds() / 60)
         issue_name = self.__issue_from_fact(fact)
-        tstart = fact.start_time
+        tstart = convert_hamster_dt_to_native_dt(fact.start_time)
         if issue_name:
             try:
                 logger.info("Log work: %s - %s to %s", tstart, time_spent, issue_name)
